@@ -4,13 +4,13 @@ My work in viewing the connection between eQTL analysis and transcript quantific
 ## Programs Needed
 snakemake must be installed to use snakefiles\
 STAR must be used to create genome index + align reads\
-featureCounts must be used to generate countMatrices\
+featureCounts must be used to generate countMatrices
 
 ## Workflow 
 Basic pipeline:\
 annotation files -> STAR -> genomeIndex\
 genomeIndex + .fastq.gz files -> STAR -> BAM files\
-genomeIndex + BAM files -> featureCounts -> count matrices + summary files\
+genomeIndex + BAM files -> featureCounts -> count matrices + summary files
 
 ## Files 
 run.sh -> run on tmux session with `source run.sh`\
