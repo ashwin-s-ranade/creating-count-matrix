@@ -39,7 +39,7 @@ rule generateCountMatrices:
     output:
         FEATURE_DIR + '/{sample}/{sample}_counts.txt'
     shell:
-        "featureCounts -a {params.anno}"
+        "featureCounts -p -a {params.anno}"
         " -o {output}"
         " {input}"
  
