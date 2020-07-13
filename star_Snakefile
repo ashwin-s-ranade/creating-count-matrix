@@ -1,0 +1,62 @@
+BASE = '/u/project/zarlab/hjp/geuvadis_data' 
+OUTPUT_DIR = '/u/home/a/asr123/project-zarlab'
+N_THREADS = 8
+STAR_DIR = OUTPUT_DIR + '/starOutputDir'
+GENOME_DIR = OUTPUT_DIR + '/tempGenomeDir'
+
+#SAMPLE_NAMES = dict()
+#with open(BASE + '/metadata/clean.tsv') as file_handle:
+#    for line in file_handle:
+#        line = line.split('\t')
+#        SAMPLE_NAMES[line[0]] = line[1:3]
+
+#SAMPLE_KEYS = sorted(list(SAMPLE_NAMES.keys()))
+
+SAMPLE_KEYS = sorted(os.listdir(BASE + '/rna'))
+
+#rule all: 
+#    input: 
+#       expand(OUTPUT_DIR + '/featureCountsData/{sample}/{sample}_countMatrix.tsv', sample=SAMPLE_KEYS)
+#       shell: remove all temp directories
+
+rule all: 
+    input: 
+        expand(STAR_DIR + '/{sample}/Aligned.sortedByCoord.out.bam', sample=SAMPLE_KEYS)
+
+#align reads with STAR
+rule align_reads: 
+    input: 
+        left = BASE + '/rna/{sample}/{sample}_1.fastq.gz',
+        right = BASE + '/rna/{sample}/{sample}_2.fastq.gz',   
+        genome_dir = GENOME_DIR #directory(GENOME_DIR) not valid
+    params: 
+        output_folder = STAR_DIR + '/{sample}/' 
+    output:
+        STAR_DIR + '/{sample}/Aligned.sortedByCoord.out.bam'
+    shell: 
+        "STAR --runThreadN {N_THREADS}"
+        " --runMode alignReads" 
+        " --genomeDir {input.genome_dir}"
+        " --readFilesCommand zcat"
+        " --readFilesIn {input.left} {input.right}"
+        " --outFileNamePrefix {params.output_folder}"
+        " --outSAMtype BAM SortedByCoordinate"         
+
+#get genome indices with STAR
+rule get_indices: 
+    input:
+        fasta = BASE + '/annotation/GRCh38.primary_assembly.genome.fa', 
+        gff = BASE + '/annotation/gencode.v34.annotation.gff3'
+    output: 
+        genome_dir = directory(GENOME_DIR)
+    run: 
+        shell("mkdir {GENOME_DIR}")
+        shell("STAR --runThreadN {N_THREADS}"
+        " --runMode genomeGenerate"
+        " --genomeDir {GENOME_DIR}"
+        " --genomeFastaFiles {input.fasta}"
+        " --sjdbGTFfile {input.gff}"
+        " --sjdbGTFtagExonParentTranscript Parent"
+        " --sjdbOverhang 100")
+
+   
