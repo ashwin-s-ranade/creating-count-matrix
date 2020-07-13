@@ -1,5 +1,5 @@
 # BIG_Summer_2020
-My work in viewing the connection between eQTL analysis and transcript quantification method, done under supervision of Professor Harold Pimentel at UCLA's BIG Summer 2020 Program.
+<!-- My work in viewing the connection between eQTL analysis and transcript quantification method, done under supervision of Professor Harold Pimentel at UCLA's BIG Summer 2020 Program. -->
 
 ## Programs Needed
 snakemake must be installed to use snakefiles\
