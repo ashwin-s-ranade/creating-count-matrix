@@ -19,8 +19,6 @@ SAMPLE_KEYS = SAMPLE_KEYS[:1]
 rule getAllCounts:
     input:
         expand(FEATURE_DIR + '/{sample}/{sample}_counts.txt', sample=SAMPLE_KEYS)
-    shell:
-        "rm snakejob*"
 
 #align reads with STAR
 rule align_reads: 
@@ -29,7 +27,7 @@ rule align_reads:
         left = BASE + '/rna/{sample}/{sample}_1.fastq.gz',
         right = BASE + '/rna/{sample}/{sample}_2.fastq.gz'   
     params: 
-        runtime = '00:30:00' 
+        runtime = '00:40:00', 
         output_folder = STAR_DIR + '/{sample}/' 
     output:
         STAR_DIR + '/{sample}/Aligned.sortedByCoord.out.bam'
@@ -48,7 +46,7 @@ rule get_indices:
         FASTA,
         ANNO
     params: 
-        runtime = '04:00:00'
+        runtime = '01:30:00'
     output: 
         genome_dir = directory(GENOME_DIR)
     shell: 
@@ -66,7 +64,7 @@ rule generateCountMatrices:
     input:
         STAR_DIR + '/{sample}/Aligned.sortedByCoord.out.bam'
     params: 
-        runtime = '00:15:00'
+        runtime = '00:08:00'
     output:
         FEATURE_DIR + '/{sample}/{sample}_counts.txt'
     shell:
