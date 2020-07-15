@@ -13,9 +13,8 @@ SAMPLE_KEY_FILE = BASE + '/annotation/yri_sample_intersection.txt'
 
 SAMPLE_KEYS = sorted([line.rstrip() for line in open(SAMPLE_KEY_FILE, 'r')])
 
+#testing on only 1 sample
 SAMPLE_KEYS = SAMPLE_KEYS[:1]
-
-print(SAMPLE_KEYS)
 
 rule getAllCounts:
     input:
@@ -30,6 +29,7 @@ rule align_reads:
         left = BASE + '/rna/{sample}/{sample}_1.fastq.gz',
         right = BASE + '/rna/{sample}/{sample}_2.fastq.gz'   
     params: 
+        runtime = '00:30:00' 
         output_folder = STAR_DIR + '/{sample}/' 
     output:
         STAR_DIR + '/{sample}/Aligned.sortedByCoord.out.bam'
@@ -47,6 +47,8 @@ rule get_indices:
     input:
         FASTA,
         ANNO
+    params: 
+        runtime = '04:00:00'
     output: 
         genome_dir = directory(GENOME_DIR)
     shell: 
@@ -63,6 +65,8 @@ rule get_indices:
 rule generateCountMatrices:
     input:
         STAR_DIR + '/{sample}/Aligned.sortedByCoord.out.bam'
+    params: 
+        runtime = '00:15:00'
     output:
         FEATURE_DIR + '/{sample}/{sample}_counts.txt'
     shell:
