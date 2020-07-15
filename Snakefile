@@ -13,9 +13,6 @@ SAMPLE_KEY_FILE = BASE + '/annotation/yri_sample_intersection.txt'
 
 SAMPLE_KEYS = sorted([line.rstrip() for line in open(SAMPLE_KEY_FILE, 'r')])
 
-#testing on only 1 sample
-SAMPLE_KEYS = SAMPLE_KEYS[:1]
-
 rule getAllCounts:
     input:
         expand(FEATURE_DIR + '/{sample}/{sample}_counts.txt', sample=SAMPLE_KEYS)
