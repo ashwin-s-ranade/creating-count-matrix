@@ -1,0 +1,57 @@
+import pandas as pd
+import os
+
+def isolate(x): 
+    if x == "Geneid":
+        return x
+    else: 
+        path = os.path.dirname(x) 
+        return os.path.basename(path)
+
+BASE = '/u/project/zarlab/hjp/geuvadis_data' 
+OUTPUT_DIR = '/u/home/a/asr123/project-zarlab'
+
+COUNTS_DIR = OUTPUT_DIR + '/totalCounts'
+FEATURE_DIR = OUTPUT_DIR + '/featureCountsData'
+
+SAMPLE_KEY_FILE = BASE + '/annotation/yri_sample_intersection.txt'
+SAMPLE_KEYS = sorted([line.rstrip() for line in open(SAMPLE_KEY_FILE, 'r')])
+
+SAMPLE_KEYS = SAMPLE_KEYS[:1]
+
+#rule totalCounts:
+#    input: 
+#        COUNTS_DIR + '/counts.txt'
+#
+rule concat: 
+    input: 
+        expand(COUNTS_DIR + "/changedNames/{sample}.txt", sample=SAMPLE_KEYS)
+#    output: 
+#        COUNTS_DIR + '/counts.txt'
+#    run:
+#        dfList = [pd.read_table(x) for x in input]
+#        df = pd.concat(dfList, axis=1)
+#        df.to_csv(output, sep='\t') 
+
+rule changeNames: 
+    input: 
+        COUNTS_DIR + "/trimmedMatrices/{sample}.txt"
+    output: 
+        COUNTS_DIR + "/changedNames/{sample}.txt"
+    run:
+        print(input) 
+        df = pd.read_csv(str(input), sep='\t')
+        df.rename(columns = lambda x : isolate(x), inplace=True)
+        df.to_csv(str(output), sep='\t')
+
+rule trim: 
+    input: 
+        FEATURE_DIR + "/{sample}/{sample}_counts.txt"
+    output: 
+        COUNTS_DIR + "/trimmedMatrices/{sample}.txt"
+    shell: 
+        "cut -f1,1,7- {input} | tail -n +2 > {output}"
+        
+        
+
+ 
